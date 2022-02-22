@@ -64,10 +64,14 @@ def _get_image_blob(roidb, scale_inds):
   for i in range(num_images):
     #im = cv2.imread(roidb[i]['image'])
     im = imread(roidb[i]['image'])
+    # print("shape=", im.shape)
 
-    if len(im.shape) == 2:
+    if len(im.shape) == 2:# one channel
       im = im[:,:,np.newaxis]
       im = np.concatenate((im,im,im), axis=2)
+    elif len(im.shape) ==3 and im.shape[2]==4:
+      im = im[:, :, 0:3]  # to deal with gas real
+
     # flip the channel, since the original one using cv2
     # rgb -> bgr
     im = im[:,:,::-1]

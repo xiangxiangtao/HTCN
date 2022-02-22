@@ -28,10 +28,17 @@ __D.WATER = "/watercolor"
 __D.PASCAL = 'data/dataset/pascal_voc'
 __D.CLIPART = 'data/dataset/clipart'
 
+__D.CITYSCAPE = "data/dataset/cityscapes_voc_format"
+__D.FOGGYCITY = "data/dataset/foggy_cityscapes_beta_0.02_voc_format"
+
+__D.GAS_COMPOSITE = 'data/dataset/composite_gas_6_VOC_500_400'
+__D.GAS_REAL = 'data/dataset/real_anntated_1_voc'
+__D.GAS_REAL_6 = 'data/dataset/real_6_voc'
+
 __D.HOS = "/home2/zzb/datasets/Hospital"
 __D.INB = "/home2/zzb/datasets/inbreast"
-__D.CITYSCAPE = "/home2/zzb/datasets/cityscapes/VOC/cityscapes"
-__D.FOGGYCITY = "/home2/zzb/datasets/cityscapes/VOC/cityscapes_foggy_0.02"
+# __D.CITYSCAPE = "/home2/zzb/datasets/cityscapes/VOC/cityscapes"
+# __D.FOGGYCITY = "/home2/zzb/datasets/cityscapes/VOC/cityscapes_foggy_0.02"
 __D.SIM10K = "/home2/zzb/datasets/sim10k"
 __D.KITTI = "/home2/zzb/datasets/kitti"
 __D.WATER = "/home2/zzb/datasets/watercolor"

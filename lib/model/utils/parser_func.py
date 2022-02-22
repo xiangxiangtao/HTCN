@@ -24,15 +24,21 @@ def parse_args():
                         default=True)
     parser.add_argument('--dataset', dest='dataset',
                         help='source training dataset',
-    #                     default='cs_combine_fg', type=str)
-                        default='voc_0712', type=str)
+    #                     default='cs_combine_fg', type=str)############################################################
+    #                     default='voc_0712', type=str)
+    #                     default = 'cs', type = str)
+                        default = 'gas_composite', type = str)
     parser.add_argument('--dataset_t', dest='dataset_t',
                         help='target training dataset',
-    #                     default='cs_fg_combine', type=str)
-                        default='clipart', type=str)
+    #                     default='cs_fg_combine', type=str)############################################################
+    #                     default='clipart', type=str)
+    #                     default = 'cs_fg', type = str)
+    #                     default = 'gas_real', type = str)
+                        default = 'gas_real_6', type = str)
     parser.add_argument('--net', dest='net',
                         help='vgg16, res101 res50',
-                        default='vgg16', type=str)
+                        default='res101', type=str)#####################################################################
+                        # default = 'vgg16', type = str)
 
     ##########################################################################
     ##########################################################################
@@ -45,7 +51,7 @@ def parse_args():
     parser.add_argument('--epochs', dest='max_epochs',
                         help='number of epochs to train',
                         # default=7, type=int)
-                        default = 30, type = int)
+                        default = 20, type = int)#######################################################################
     parser.add_argument('--gamma', dest='gamma',
                         help='value of gamma',
                         default=3, type=float)
@@ -55,12 +61,14 @@ def parse_args():
     parser.add_argument('--checkpoint_interval', dest='checkpoint_interval',
                         help='number of iterations to display',
                         default=10000, type=int)
+                        # default = 2000, type = int)  ##########################################################################
 
     parser.add_argument('--save_dir', dest='save_dir',
                         help='directory to save models', default="models",
                         type=str)
     parser.add_argument('--load_name', dest='load_name',
-                        help='path to load models', default="",
+                        help='path to load models',
+                        default="models/res101/cs2cs_fg/target_gas_real_6_eta_0.1_local_True_global_True_gamma_3_session_1_epoch_15_step_10000.pth",#############################
                         type=str)
     parser.add_argument('--nw', dest='num_workers',
                         help='number of worker to load data',
@@ -107,9 +115,11 @@ def parse_args():
     parser.add_argument('--r', dest='resume',
                         help='resume checkpoint or not',
                         default=False, type=bool)
+                        # default = True, type = bool)######################################################################
     parser.add_argument('--checksession', dest='checksession',
                         help='checksession to load model',
                         default=1, type=int)
+                        # default = 10, type = int)######################################################################
     parser.add_argument('--checkepoch', dest='checkepoch',
                         help='checkepoch to load model',
                         default=1, type=int)
@@ -134,15 +144,22 @@ def set_dataset_args(args, test=False):
         elif args.dataset == "inb":
             args.imdb_name = "inb_2007_trainval"
             args.set_cfgs = ['ANCHOR_SCALES', '[8, 16, 32]', 'ANCHOR_RATIOS', '[0.5,1,2]', 'MAX_NUM_GT_BOXES', '20']
-        elif args.dataset == "voc_0712":
+
+        elif args.dataset == "voc_0712":##################################################################################
             args.imdb_name = "voc_2007_trainval+voc_2012_trainval"
             args.set_cfgs = ['ANCHOR_SCALES', '[8, 16, 32]', 'ANCHOR_RATIOS', '[0.5,1,2]', 'MAX_NUM_GT_BOXES', '20']
-        elif args.dataset == "cs":
-            args.imdb_name = "cs_2007_train"
+        elif args.dataset == "cs":############################################################################################
+            # args.imdb_name = "cs_2007_train"
+            args.imdb_name = "cs_2007_trainval"
             args.set_cfgs = ['ANCHOR_SCALES', '[8, 16, 32]', 'ANCHOR_RATIOS', '[0.5,1,2]', 'MAX_NUM_GT_BOXES', '20']
         elif args.dataset == "cs_combine_fg":
             args.imdb_name = "cs_2007_train_combine_fg"
             args.set_cfgs = ['ANCHOR_SCALES', '[8, 16, 32]', 'ANCHOR_RATIOS', '[0.5,1,2]', 'MAX_NUM_GT_BOXES', '20']
+        elif args.dataset == "gas_composite":##################################################################################
+            # args.imdb_name = "gas_composite_2007_trainval"
+            args.imdb_name = "gas_composite_2007_train"
+            args.set_cfgs = ['ANCHOR_SCALES', '[8, 16, 32]', 'ANCHOR_RATIOS', '[0.5,1,2]', 'MAX_NUM_GT_BOXES', '20']
+
         elif args.dataset == "sim":
             args.imdb_name = "sim10k_2012_trainval"
             args.set_cfgs = ['ANCHOR_SCALES', '[8, 16, 32]', 'ANCHOR_RATIOS', '[0.5,1,2]', 'MAX_NUM_GT_BOXES', '20']
@@ -168,12 +185,19 @@ def set_dataset_args(args, test=False):
             args.imdb_name_target = "hos_2007_trainval"
         elif args.dataset_t == "inb":
             args.imdb_name_target = "inb_2007_trainval"
-        elif args.dataset_t == "clipart":
+
+        elif args.dataset_t == "clipart":###############################################################################
             args.imdb_name_target = "clipart_2007_train"
-        elif args.dataset_t == "cs_fg":
-            args.imdb_name_target = "cs_fg_2007_train"
+        elif args.dataset_t == "cs_fg":####################################################################################
+            # args.imdb_name_target = "cs_fg_2007_train"
+            args.imdb_name_target = "cs_fg_2007_trainval"
         elif args.dataset_t == "cs_fg_combine":
             args.imdb_name_target = "cs_fg_2007_train_combine"
+        elif args.dataset_t == "gas_real":####################################################################################gas_real
+            args.imdb_name_target = "gas_real_2007_trainval"
+        elif args.dataset_t == "gas_real_6":####################################################################################gas_real_6
+            args.imdb_name_target = "gas_real_6_2007_train"
+
         elif args.dataset_t == "cs_car":
             args.imdb_name_target = "cs_car_2007_train"
         elif args.dataset_t == "cs_car_combine":
@@ -189,15 +213,26 @@ def set_dataset_args(args, test=False):
         elif args.dataset_t == "inb":
             args.imdb_name_target = "inb_2007_trainval"
             args.set_cfgs_target = ['ANCHOR_SCALES', '[8, 16, 32]', 'ANCHOR_RATIOS', '[0.5,1,2]', 'MAX_NUM_GT_BOXES', '20']
+
         elif args.dataset_t == "clipart":
-            args.imdb_name_target = "clipart_2007_val"
+            # args.imdb_name_target = "clipart_2007_val"
+            args.imdb_name_target = "clipart_2007_test"####################################################################
             args.set_cfgs_target = ['ANCHOR_SCALES', '[8, 16, 32]', 'ANCHOR_RATIOS', '[0.5,1,2]', 'MAX_NUM_GT_BOXES', '20']
-        elif args.dataset_t == "cs_fg":
-            args.imdb_name_target = "cs_fg_2007_val"
+        elif args.dataset_t == "cs_fg":######################################################################################
+            # args.imdb_name_target = "cs_fg_2007_val"
+            args.imdb_name_target = "cs_fg_2007_test"
             args.set_cfgs_target = ['ANCHOR_SCALES', '[8, 16, 32]', 'ANCHOR_RATIOS', '[0.5,1,2]', 'MAX_NUM_GT_BOXES', '20']
         elif args.dataset_t == "cs_fg_combine":
             args.imdb_name_target = "cs_fg_2007_val"
             args.set_cfgs_target = ['ANCHOR_SCALES', '[8, 16, 32]', 'ANCHOR_RATIOS', '[0.5,1,2]', 'MAX_NUM_GT_BOXES', '20']
+        elif args.dataset_t == "gas_real":####################################################################################
+            args.imdb_name_target = "gas_real_2007_test"
+            args.set_cfgs_target = ['ANCHOR_SCALES', '[8, 16, 32]', 'ANCHOR_RATIOS', '[0.5,1,2]', 'MAX_NUM_GT_BOXES','20']
+        elif args.dataset_t == "gas_real_6":####################################################################################gas_real_6
+            args.imdbval_name_target = "gas_real_6_2007_val"
+            args.imdbtest_name_target = "gas_real_6_2007_test"
+            args.set_cfgs_target = ['ANCHOR_SCALES', '[8, 16, 32]', 'ANCHOR_RATIOS', '[0.5,1,2]', 'MAX_NUM_GT_BOXES','20']
+
         elif args.dataset_t == "cs_car":
             args.imdb_name_target = "cs_car_2007_val"
             args.set_cfgs_target = ['ANCHOR_SCALES', '[8, 16, 32]', 'ANCHOR_RATIOS', '[0.5,1,2]', 'MAX_NUM_GT_BOXES', '20']
@@ -215,7 +250,7 @@ def set_dataset_args(args, test=False):
             args.set_cfgs_target = ['ANCHOR_SCALES', '[8, 16, 32]', 'ANCHOR_RATIOS', '[0.5,1,2]', 'MAX_NUM_GT_BOXES',
                                     '20']
         elif args.dataset_t == "voc_0712":
-            args.imdb_name_target = "voc_2012_val"
+            args.imdb_name_target = "voc_2012_val"#########################################################################
             args.set_cfgs_target = ['ANCHOR_SCALES', '[8, 16, 32]', 'ANCHOR_RATIOS', '[0.5,1,2]', 'MAX_NUM_GT_BOXES',
                                     '20']
 

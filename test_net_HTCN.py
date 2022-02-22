@@ -23,6 +23,7 @@ from model.roi_layers import nms
 from model.rpn.bbox_transform import bbox_transform_inv
 #from model.utils.net_utils import save_net, load_net, vis_detections
 from model.utils.parser_func import parse_args,set_dataset_args
+from lib.datasets.gas_real import iou_thresh
 
 import pdb
 
@@ -38,6 +39,9 @@ momentum = cfg.TRAIN.MOMENTUM
 weight_decay = cfg.TRAIN.WEIGHT_DECAY
 
 if __name__ == '__main__':
+  print("*"*100)
+  print("iou_thresh={}".format(iou_thresh))
+  print("*" * 100)
 
   args = parse_args()
 
@@ -57,7 +61,8 @@ if __name__ == '__main__':
   pprint.pprint(cfg)
 
   cfg.TRAIN.USE_FLIPPED = False
-  imdb, roidb, ratio_list, ratio_index = combined_roidb(args.imdb_name_target, False)
+  imdb, roidb, ratio_list, ratio_index = combined_roidb(args.imdbval_name_target, False)
+  # imdb, roidb, ratio_list, ratio_index = combined_roidb(args.imdbtest_name_target, False)
   imdb.competition_mode(on=True)
 
   print('{:d} roidb entries'.format(len(roidb)))
@@ -129,7 +134,8 @@ if __name__ == '__main__':
 
   output_dir = get_output_dir(imdb, save_name)
   dataset = roibatchLoader(roidb, ratio_list, ratio_index, 1, \
-                        imdb.num_classes, training=False, normalize = False, path_return=True)
+                        # imdb.num_classes, training=False, normalize = False, path_return=True)
+                        imdb.num_classes, training = False, normalize = False)
   dataloader = torch.utils.data.DataLoader(dataset, batch_size=1,
                             shuffle=False, num_workers=0,
                             pin_memory=True)

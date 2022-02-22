@@ -37,18 +37,20 @@ except NameError:
 
 # <<<< obsolete
 
-class cityscape(imdb):
+iou_thresh=0.5###########################################################################################################
+
+class gas_real_6(imdb):
     def __init__(self, image_set, year, devkit_path=None):
-        imdb.__init__(self, 'cs_' + year + '_' + image_set)
+        imdb.__init__(self, 'gas_real_6_' + year + '_' + image_set)
         self._year = year
         self._image_set = image_set
-        self._devkit_path = cfg_d.CITYSCAPE
-        self._data_path = os.path.join(self._devkit_path, 'VOC' + self._year)
+        self._devkit_path = cfg_d.GAS_REAL_6
+        # self._data_path = os.path.join(self._devkit_path, 'VOC' + self._year)
+        self._data_path = self._devkit_path
         self._classes = ('__background__',  # always index 0
-                         'bus', 'bicycle', 'car', 'motorcycle', 'person', 'rider', 'train', 'truck')
+                         'smoke')# smoke is gas
         self._class_to_ind = dict(zip(self.classes, xrange(self.num_classes)))
 
-        # self._image_ext = '.jpg'
         self._image_ext = '.png'
         self._image_index = self._load_image_set_index()
         self._roidb_handler = self.gt_roidb
@@ -203,9 +205,15 @@ class cityscape(imdb):
         Load image and bounding boxes info from XML file in the PASCAL VOC
         format.
         """
-        filename = os.path.join(self._data_path, 'Annotations', index + '.xml')
-        # print("-"*100)
-        # print(filename)
+        # filename = os.path.join(self._data_path, 'Annotations', index + '.xml')
+
+        if self._image_set=='train':
+            filename = "data/dataset/real_6_voc/Annotations/42_0.xml"#######################################for train:because train has no annotation,random read an annotation
+        else:
+            filename = os.path.join(self._data_path, 'Annotations', index + '.xml')
+
+
+
         tree = ET.parse(filename)
         objs = tree.findall('object')
         # if not self.config['use_diff']:
@@ -224,14 +232,13 @@ class cityscape(imdb):
         # "Seg" area for pascal is just the box area
         seg_areas = np.zeros((num_objs), dtype=np.float32)
         ishards = np.zeros((num_objs), dtype=np.int32)
-        tree = ET.parse(filename)
-        img_size = tree.find('size')#[0]
-        #print(img_size)
-        #print((int(tree.find('width').text)))
+        # tree = ET.parse(filename)
+        # img_size = tree.find('size')#[0]
+        # #print(img_size)
+        # #print((int(tree.find('width').text)))
         # seg_map = np.zeros((int(img_size.find('width').text),int(img_size.find('height').text)))
         # Load object bounding boxes into a data frame.
         for ix, obj in enumerate(objs):
-            # print(ix,obj)
             bbox = obj.find('bndbox')
             # Make pixel indexes 0-based
             x1 = max(float(bbox.find('xmin').text) - 1, 0)
@@ -294,12 +301,12 @@ class cityscape(imdb):
     def _do_python_eval(self, output_dir='output'):
         annopath = os.path.join(
             self._devkit_path,
-            'VOC' + self._year,
+            # 'VOC' + self._year,
             'Annotations',
             '{:s}.xml')
         imagesetfile = os.path.join(
             self._devkit_path,
-            'VOC' + self._year,
+            # 'VOC' + self._year,
             'ImageSets',
             'Main',
             self._image_set + '.txt')
@@ -315,7 +322,7 @@ class cityscape(imdb):
                 continue
             filename = self._get_voc_results_file_template().format(cls)
             rec, prec, ap = voc_eval(
-                filename, annopath, imagesetfile, cls, cachedir, ovthresh=0.5,
+                filename, annopath, imagesetfile, cls, cachedir, ovthresh=iou_thresh,##########################################
                 use_07_metric=use_07_metric)
             aps += [ap]
             print('AP for {} = {:.4f}'.format(cls, ap))
@@ -326,19 +333,19 @@ class cityscape(imdb):
         with open(os.path.join(output_dir, 'eval_result.txt'), 'a') as result_f:
             result_f.write('Mean AP = {:.4f}'.format(np.mean(aps)) + '\n')
         print('Mean AP = {:.4f}'.format(np.mean(aps)))
-        print('~~~~~~~~')
-        print('Results:')
-        for ap in aps:
-            print('{:.3f}'.format(ap))
-        print('{:.3f}'.format(np.mean(aps)))
-        print('~~~~~~~~')
-        print('')
-        print('--------------------------------------------------------------')
-        print('Results computed with the **unofficial** Python eval code.')
-        print('Results should be very close to the official MATLAB eval code.')
-        print('Recompute with `./tools/reval.py --matlab ...` for your paper.')
-        print('-- Thanks, The Management')
-        print('--------------------------------------------------------------')
+        # print('~~~~~~~~')
+        # print('Results:')
+        # for ap in aps:
+        #     print('{:.3f}'.format(ap))
+        # print('{:.3f}'.format(np.mean(aps)))
+        # print('~~~~~~~~')
+        # print('')
+        # print('--------------------------------------------------------------')
+        # print('Results computed with the **unofficial** Python eval code.')
+        # print('Results should be very close to the official MATLAB eval code.')
+        # print('Recompute with `./tools/reval.py --matlab ...` for your paper.')
+        # print('-- Thanks, The Management')
+        # print('--------------------------------------------------------------')
 
     def _do_matlab_eval(self, output_dir='output'):
         print('-----------------------------------------------------')
