@@ -34,7 +34,8 @@ def parse_args():
     #                     default='clipart', type=str)
     #                     default = 'cs_fg', type = str)
     #                     default = 'gas_real', type = str)
-                        default = 'gas_real_6', type = str)
+                        # default = 'gas_real_6', type = str)
+                        default = 'gas_real_7', type = str)
     parser.add_argument('--net', dest='net',
                         help='vgg16, res101 res50',
                         default='res101', type=str)#####################################################################
@@ -129,7 +130,7 @@ def parse_args():
     # log and diaplay
     parser.add_argument('--use_tfb', dest='use_tfboard',
                         help='whether use tensorboard',
-                        default= True)
+                        default= False)
     parser.add_argument('--image_dir', dest='image_dir',
                         help='directory to load images for demo',
                         default="images")
@@ -156,8 +157,8 @@ def set_dataset_args(args, test=False):
             args.imdb_name = "cs_2007_train_combine_fg"
             args.set_cfgs = ['ANCHOR_SCALES', '[8, 16, 32]', 'ANCHOR_RATIOS', '[0.5,1,2]', 'MAX_NUM_GT_BOXES', '20']
         elif args.dataset == "gas_composite":##################################################################################
-            # args.imdb_name = "gas_composite_2007_trainval"
-            args.imdb_name = "gas_composite_2007_train"
+            args.imdb_name = "gas_composite_2007_trainval"
+            # args.imdb_name = "gas_composite_2007_train"
             args.set_cfgs = ['ANCHOR_SCALES', '[8, 16, 32]', 'ANCHOR_RATIOS', '[0.5,1,2]', 'MAX_NUM_GT_BOXES', '20']
 
         elif args.dataset == "sim":
@@ -197,6 +198,8 @@ def set_dataset_args(args, test=False):
             args.imdb_name_target = "gas_real_2007_trainval"
         elif args.dataset_t == "gas_real_6":####################################################################################gas_real_6
             args.imdb_name_target = "gas_real_6_2007_train"
+        elif args.dataset_t == "gas_real_7":####################################################################################gas_real_7
+            args.imdb_name_target = "gas_real_7_2007_train"
 
         elif args.dataset_t == "cs_car":
             args.imdb_name_target = "cs_car_2007_train"
@@ -231,6 +234,9 @@ def set_dataset_args(args, test=False):
         elif args.dataset_t == "gas_real_6":####################################################################################gas_real_6
             args.imdbval_name_target = "gas_real_6_2007_val"
             args.imdbtest_name_target = "gas_real_6_2007_test"
+            args.set_cfgs_target = ['ANCHOR_SCALES', '[8, 16, 32]', 'ANCHOR_RATIOS', '[0.5,1,2]', 'MAX_NUM_GT_BOXES','20']
+        elif args.dataset_t == "gas_real_7":####################################################################################gas_real_7
+            args.imdbval_name_target = "gas_real_7_2007_val"
             args.set_cfgs_target = ['ANCHOR_SCALES', '[8, 16, 32]', 'ANCHOR_RATIOS', '[0.5,1,2]', 'MAX_NUM_GT_BOXES','20']
 
         elif args.dataset_t == "cs_car":

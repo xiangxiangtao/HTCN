@@ -21,6 +21,7 @@ from datasets.kitti_car import kitti_car
 from datasets.gas_composite import gas_composite
 from datasets.gas_real import gas_real
 from datasets.gas_real_6 import gas_real_6
+from datasets.gas_real_7 import gas_real_7
 
 import numpy as np
 
@@ -50,8 +51,7 @@ for year in ['2007']:
     __sets[name] = (lambda split=split: foggy_cityscape(split, year))
 
 for year in ['2007']:
-  # for split in ['trainval', 'test', 'trainval_cg']:
-  for split in ['train', 'test', 'train_cg']:
+  for split in ['trainval', 'test']:
     name = 'gas_composite_{}_{}'.format(year, split)########################################################################### gas_composite
     __sets[name] = (lambda split=split : gas_composite(split,year))
 
@@ -64,6 +64,11 @@ for year in ['2007']:
   for split in ['train', 'val','test', 'train_cg']:
     name = 'gas_real_6_{}_{}'.format(year, split)########################################################################### gas_real_6
     __sets[name] = (lambda split=split : gas_real_6(split,year))
+
+for year in ['2007']:
+  for split in ['train', 'val']:
+    name = 'gas_real_7_{}_{}'.format(year, split)########################################################################### gas_real_6
+    __sets[name] = (lambda split=split : gas_real_7(split,year))
 
 
 for year in ['2012']:

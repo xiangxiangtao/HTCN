@@ -32,22 +32,45 @@ try:
 except NameError:
     xrange = range  # Python 3
 
+class Timer(object):
+    """A simple timer."""
+    def __init__(self):
+        self.total_time = 0.
+        self.calls = 0
+        self.start_time = 0.
+        self.diff = 0.
+        self.average_time = 0.
+
+    def tic(self):
+        # using time.time instead of time.clock because time time.clock
+        # does not normalize for multithreading
+        self.start_time = time.time()
+
+    def toc(self, average=True):
+        self.diff = time.time() - self.start_time
+        self.total_time += self.diff
+        self.calls += 1
+        self.average_time = self.total_time / self.calls
+        if average:
+            return self.average_time
+        else:
+            return self.diff
 
 
 lr = cfg.TRAIN.LEARNING_RATE
 momentum = cfg.TRAIN.MOMENTUM
 weight_decay = cfg.TRAIN.WEIGHT_DECAY
 
-if __name__ == '__main__':
-  print("*"*100)
-  print("iou_thresh={}".format(iou_thresh))
-  print("*" * 100)
+print("iou_thresh={}".format(iou_thresh))
 
-  args = parse_args()
+args = parse_args()
 
-  print('Called with args:')
-  print(args)
-  args = set_dataset_args(args,test=True)
+print('Called with args:')
+print(args)
+args = set_dataset_args(args,test=True)
+
+
+def test_one_weight(weight_name=None):
   if torch.cuda.is_available() and not args.cuda:
     print("WARNING: You have a CUDA device, so you should probably run with --cuda")
   np.random.seed(cfg.RNG_SEED)
@@ -57,11 +80,11 @@ if __name__ == '__main__':
   if args.set_cfgs_target is not None:
     cfg_from_list(args.set_cfgs_target)
 
-  print('Using config:')
-  pprint.pprint(cfg)
+  # print('Using config:')
+  # pprint.pprint(cfg)
 
   cfg.TRAIN.USE_FLIPPED = False
-  imdb, roidb, ratio_list, ratio_index = combined_roidb(args.imdbval_name_target, False)
+  imdb, roidb, ratio_list, ratio_index = combined_roidb(args.imdbval_name_target, False)#############################################################################
   # imdb, roidb, ratio_list, ratio_index = combined_roidb(args.imdbtest_name_target, False)
   imdb.competition_mode(on=True)
 
@@ -87,8 +110,12 @@ if __name__ == '__main__':
 
   fasterRCNN.create_architecture()
 
-  print("load checkpoint %s" % (args.load_name))
-  checkpoint = torch.load(args.load_name)
+  if weight_name is None:
+    print("load checkpoint %s" % (args.load_name))
+    checkpoint = torch.load(args.load_name)
+  else:
+    print("load checkpoint %s" % (weight_name))
+    checkpoint = torch.load(weight_name)
   fasterRCNN.load_state_dict(checkpoint['model'])
   if 'pooling_mode' in checkpoint.keys():
     cfg.POOLING_MODE = checkpoint['pooling_mode']
@@ -244,3 +271,28 @@ if __name__ == '__main__':
 
   end = time.time()
   print("test time: %0.4fs" % (end - start))
+
+
+def test_several_weights():
+    weight_dir=r"models/res101/weight_htcn_gas_gas_composite-gas_real_7"################################################
+    weight_list=os.listdir(weight_dir)
+    weight_list.sort(key=lambda x:int(x[x.index("step")+5:x.index(".pth")]))# sort by step
+    weight_list.sort(key=lambda x: int(x[x.index("epoch") + 6:x.index("_step")]))# sort by epoch
+    for weight in weight_list:
+        print("-"*200)
+        print(weight)
+        weight_path = os.path.join(weight_dir,weight)
+        test_one_weight(weight_path)
+
+
+if __name__ == '__main__':
+  # test_one_weight()   # weight set in parser_func.py
+
+  test_several_weights()
+
+
+
+
+
+
+  

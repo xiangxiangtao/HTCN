@@ -59,7 +59,7 @@ if __name__ == '__main__':
 
     # train set
     # -- Note: Use validation set and disable the flipped to enable faster loading.
-    cfg.TRAIN.USE_FLIPPED = True
+    cfg.TRAIN.USE_FLIPPED = False
     cfg.USE_GPU_NMS = args.cuda
     # source dataset
     imdb, roidb, ratio_list, ratio_index = combined_roidb(args.imdb_name)
@@ -71,7 +71,8 @@ if __name__ == '__main__':
     print('{:d} source roidb entries'.format(len(roidb)))
     print('{:d} target roidb entries'.format(len(roidb_t)))
 
-    output_dir = args.save_dir + "/" + args.net + "/" + args.log_ckpt_name
+    # output_dir = args.save_dir + "/" + args.net + "/" + args.log_ckpt_name
+    output_dir = args.save_dir + "/" + args.net + "/" + "weight_htcn_gas_{}-{}".format(args.dataset,args.dataset_t)
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
@@ -161,7 +162,8 @@ if __name__ == '__main__':
 
     if args.mGPUs:
         fasterRCNN = nn.DataParallel(fasterRCNN)
-    iters_per_epoch = int(10000 / args.batch_size)
+    # iters_per_epoch = int(10000 / args.batch_size)
+    iters_per_epoch = int(len(dataloader_s)/args.batch_size)####################################################################################################################
     if args.ef:
         FL = EFocalLoss(class_num=2, gamma=args.gamma)
     else:
@@ -363,9 +365,9 @@ if __name__ == '__main__':
 
                 start = time.time()
 
-            if epoch > 6 and step in [2000, 4000, 6000, 8000]:
+            if (step+1) % 1000 == 0:
                 save_name = os.path.join(output_dir,
-                                         'globallocal_target_{}_eta_{}_local_context_{}_global_context_{}_gamma_{}_session_{}_epoch_{}_step_{}.pth'.format(
+                                         'htcn_target_{}_eta_{}_local_context_{}_global_context_{}_gamma_{}_session_{}_epoch_{}_step_{}.pth'.format(
                                              args.dataset_t, args.eta,
                                              args.lc, args.gc, args.gamma,
                                              args.session, epoch,
@@ -380,21 +382,21 @@ if __name__ == '__main__':
                 }, save_name)
                 print('save model: {}'.format(save_name))
 
-        save_name = os.path.join(output_dir,
-                                 'target_{}_eta_{}_local_{}_global_{}_gamma_{}_session_{}_epoch_{}_step_{}.pth'.format(
-                                     args.dataset_t,args.eta,
-                                     args.lc, args.gc, args.gamma,
-                                     args.session, epoch,
-                                     step))
-        save_checkpoint({
-            'session': args.session,
-            'epoch': epoch + 1,
-            'model': fasterRCNN.module.state_dict() if args.mGPUs else fasterRCNN.state_dict(),
-            'optimizer': optimizer.state_dict(),
-            'pooling_mode': cfg.POOLING_MODE,
-            'class_agnostic': args.class_agnostic,
-        }, save_name)
-        print('save model: {}'.format(save_name))
+        # save_name = os.path.join(output_dir,
+        #                          'target_{}_eta_{}_local_{}_global_{}_gamma_{}_session_{}_epoch_{}_step_{}.pth'.format(
+        #                              args.dataset_t,args.eta,
+        #                              args.lc, args.gc, args.gamma,
+        #                              args.session, epoch,
+        #                              step))
+        # save_checkpoint({
+        #     'session': args.session,
+        #     'epoch': epoch + 1,
+        #     'model': fasterRCNN.module.state_dict() if args.mGPUs else fasterRCNN.state_dict(),
+        #     'optimizer': optimizer.state_dict(),
+        #     'pooling_mode': cfg.POOLING_MODE,
+        #     'class_agnostic': args.class_agnostic,
+        # }, save_name)
+        # print('save model: {}'.format(save_name))
 
     if args.use_tfboard:
         logger.close()
