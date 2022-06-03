@@ -1,5 +1,10 @@
-logs/
-output/
-models/
-weight/
-data/
+logs/*
+!logs/.gitkeep
+output/*
+!output/.gitkeep
+models/*
+!models/.gitkeep
+weight/*
+!weight/.gitkeep
+data/*
+!/.gitkeep
