@@ -170,6 +170,7 @@ def test_one_weight(weight_name=None):
   data_iter = iter(dataloader)
 
   _t = {'im_detect': time.time(), 'misc': time.time()}
+  _t1 = {'im_detect': Timer(), 'misc': Timer()}
   det_file = os.path.join(output_dir, 'detections.pkl')
 
   fasterRCNN.eval()
@@ -184,6 +185,8 @@ def test_one_weight(weight_name=None):
       num_boxes.data.resize_(data[3].size()).copy_(data[3])
 
       det_tic = time.time()
+      _t1['im_detect'].tic()
+
       rois, cls_prob, bbox_pred, \
       rpn_loss_cls, rpn_loss_box, \
       RCNN_loss_cls, RCNN_loss_bbox, \
@@ -254,6 +257,9 @@ def test_one_weight(weight_name=None):
                   keep = np.where(all_boxes[j][i][:, -1] >= image_thresh)[0]
                   all_boxes[j][i] = all_boxes[j][i][keep, :]
 
+      detect_time1 = _t1['im_detect'].toc(average=True)
+      print('current_im_detect: {:d}/{:d} {:.3f}s'.format(i + 1, num_images, detect_time1))
+
       misc_toc = time.time()
       nms_time = misc_toc - misc_tic
 
@@ -274,7 +280,7 @@ def test_one_weight(weight_name=None):
 
 
 def test_several_weights():
-    weight_dir=r"models/res101/weight_htcn_gas_gas_composite-gas_real_7"################################################
+    weight_dir=r"models/res101/weight_htcn_ga s_gas_composite-gas_real_7"################################################
     weight_list=os.listdir(weight_dir)
     weight_list.sort(key=lambda x:int(x[x.index("step")+5:x.index(".pth")]))# sort by step
     weight_list.sort(key=lambda x: int(x[x.index("epoch") + 6:x.index("_step")]))# sort by epoch
@@ -286,9 +292,10 @@ def test_several_weights():
 
 
 if __name__ == '__main__':
-  # test_one_weight()   # weight set in parser_func.py
+  weight_path=r"weight/weight_htcn_res101_gas_composite18.1-real7_epoch2_step6999_no-interpolation.pth"
+  test_one_weight(weight_path)   # weight set in parser_func.py
 
-  test_several_weights()
+  # test_several_weights()
 
 
 
